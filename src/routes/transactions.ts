@@ -23,4 +23,23 @@ export async function transactionsRoutes(app: FastifyInstance) {
 
     return reply.status(201).send()
   })
+
+  app.get('/', async () => {
+    const transactions = await knex('transactions').select()
+
+    return { transactions }
+  })
+
+  app.get('/:id', async (request) => {
+    const getTransactionParamsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const params = getTransactionParamsSchema.parse(request.params)
+
+    const { id } = params
+    const transactions = await knex('transactions').where('id', id).first()
+
+    return { transactions }
+  })
 }
